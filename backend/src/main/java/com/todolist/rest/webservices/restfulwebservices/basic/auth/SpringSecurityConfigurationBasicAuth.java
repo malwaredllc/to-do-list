@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SpringSecurityConfigurationBasicAuth extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
-		logger.debug("Using default configure(HttpSecurity). If subclassed this will potentially override subclass configure(HttpSecurity).");
-
 		http
 			.csrf().disable()
 			.authorizeRequests()
