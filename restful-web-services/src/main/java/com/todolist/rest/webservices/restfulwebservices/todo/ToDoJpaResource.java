@@ -22,46 +22,44 @@ import com.todolist.rest.webservices.restfulwebservices.todo.Todo;
 
 @CrossOrigin(origins="http://localhost:4200")
 @RestController
-public class ToDoResource {
+public class ToDoJpaResource {
 	
 	@Autowired
-	private TodoHardcodedService todoService;
+	private TodoJpaRepository todoJpaRepository;
 	
-	@GetMapping("/users/{username}/todos")
+	@GetMapping("/jpa/users/{username}/todos")
 	public List<Todo> getAllTodos(@PathVariable String username) {
-		return todoService.findAll();
+		return todoJpaRepository.findByUsername(username);
 	}
 	
-	@GetMapping("/users/{username}/todos/{id}")
+	@GetMapping("/jpa/users/{username}/todos/{id}")
 	public Todo getAllTodos(
 			@PathVariable String username, @PathVariable long id) {
-		return todoService.findById(id);
+		return todoJpaRepository.findById(id).get();
 	}
 	
 	
-	@DeleteMapping("/users/{username}/todos/{id}")
+	@DeleteMapping("/jpa/users/{username}/todos/{id}")
 	public ResponseEntity<Void> deleteTodo(
 			@PathVariable String username, @PathVariable long id) {
-		Todo todo = todoService.deleteById(id);
-		if (todo != null) {
-			return ResponseEntity.noContent().build();
-		}
-		return ResponseEntity.notFound().build();
+		todoJpaRepository.deleteById(id);
+		return ResponseEntity.noContent().build();
 	}
 	
-	@PutMapping("/users/{username}/todos/{id}")
+	@PutMapping("/jpa/users/{username}/todos/{id}")
 	public ResponseEntity<Todo> updateTodo(
 			@PathVariable String username, @PathVariable long id, @RequestBody Todo todo) {
 		
-		Todo todoUpdated = todoService.save(todo);
+		Todo todoUpdated = todoJpaRepository.save(todo);
 		return new ResponseEntity<Todo>(todoUpdated, HttpStatus.OK);
 	}
 	
-	@PostMapping("/users/{username}/todos")
+	@PostMapping("/jpa/users/{username}/todos")
 	public ResponseEntity<Todo> createTodo(
 			@PathVariable String username, @RequestBody Todo todo) {
-	
-		Todo todoCreated = todoService.save(todo);
+
+		todo.setUsername(username);
+		Todo todoCreated = todoJpaRepository.save(todo);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(todoCreated.getId()).toUri();
 		return ResponseEntity.created(uri).build();
 	}
